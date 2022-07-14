@@ -1,0 +1,36 @@
+var exp=require('express');
+var fs = require('fs');
+var app=exp();
+
+//custom special in middleware
+app.use(function(req,res,next){
+	var cdate = new Date();
+	var str = "Request received for "+req.url+ " at "+cdate.toString()+"\n";
+	fs.appendFile("log.txt",str,function(err){
+		if(err){
+				console.log(" Log Generated");
+				}
+	});
+	next();   //imp - to go further and find out next middleware
+});
+//general middleware
+app.use(function(req,res,next){
+	console.log(req.url+ " in general middleware");
+	next();
+});
+app.listen(9000,function(){
+console.log("Express aplication started at server 9000");
+});
+
+app.get('/login',function(req,res){ //route of login
+       res.sendFile( __dirname +"/login.html");
+	
+});
+app.get('/home',function(req,res){  //route of home
+       res.sendFile( __dirname +"/home.html");
+	
+});
+
+app.all('*',function(req,res){
+	res.send("Invalid URL...");
+});
